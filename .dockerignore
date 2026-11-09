@@ -1,0 +1,11 @@
+**/node_modules
+**/dist
+**/.expo
+.git
+docs
+infra
+bot
+box
+.env*
+**/.env*
+**/*.log

@@ -1,0 +1,139 @@
+{
+  "_note": "契約（docs/api-contract.md §3・§4）の応答の形。app/api/test/contract-shapes.test.js がサーバーの実応答を、app/mobile/src/__tests__/contractShapes.test.ts が mock の応答と types.ts をこれと突き合わせる。スマホ側に同じ中身の写し（app/mobile/src/__tests__/contract-shapes.json）があり、サーバーの試験が一致を確かめる。型の書き方: string|number|boolean|null|object、[X]＝X の配列、大文字で始まる名前＝下の models、| は「どれか」。required にも optional にも無いキーが返ったら試験が落ちる（足す時は先に契約）。",
+  "models": {
+    "User": {
+      "required": { "id": "string", "friendCode": "string", "displayName": "string", "nudgeLevel": "string", "streak": "number", "createdAt": "string" },
+      "optional": {}
+    },
+    "Goal": {
+      "required": { "id": "string", "userId": "string", "text": "string", "deadline": "string|null", "minutesPerDay": "number|null", "status": "string" },
+      "optional": { "kind": "string", "materials": "string", "createdAt": "string", "archivedAt": "string", "docs": "[GoalDoc]" }
+    },
+    "GoalDoc": {
+      "required": { "id": "string", "title": "string", "text": "string", "from": "string", "addedAt": "string" },
+      "optional": { "updatedAt": "string" }
+    },
+    "Checkpoint": {
+      "required": { "id": "string", "order": "number", "title": "string", "doneMark": "string", "estimateMin": "number", "state": "string", "achievement": "number|null" },
+      "optional": { "aiAchievement": "number|null", "achievementReason": "string" }
+    },
+    "CandidateCheckpoint": {
+      "required": { "id": "string", "order": "number", "title": "string", "doneMark": "string", "estimateMin": "number" },
+      "optional": {}
+    },
+    "Candidate": {
+      "required": { "id": "string", "label": "string", "summary": "string", "checkpoints": "[CandidateCheckpoint]", "axes": "object" },
+      "optional": {}
+    },
+    "Axis": {
+      "required": { "key": "string", "label": "string" },
+      "optional": {}
+    },
+    "Roadmap": {
+      "required": { "id": "string", "goalId": "string", "userId": "string", "adopted": "string", "why": "string", "checkpoints": "[Checkpoint]", "createdAt": "string" },
+      "optional": { "editRatio": "number" }
+    },
+    "Session": {
+      "required": { "id": "string", "userId": "string", "goalId": "string", "checkpointId": "string", "startedAt": "string", "oneLine": "string", "leaveCount": "number" },
+      "optional": {
+        "focusMin": "number", "endedAt": "string", "materials": "string", "stuckCause": "string", "reflectedAt": "string",
+        "judgeable": "boolean", "aiAchievement": "number|null", "achievement": "number|null", "achievementReason": "string",
+        "nextSteps": "[string]", "note": "string", "aiUnavailable": "boolean", "confirmedAt": "string"
+      }
+    },
+    "Event": {
+      "required": { "id": "string", "userId": "string", "sessionId": "string", "type": "string", "at": "string" },
+      "optional": { "meta": "object" }
+    },
+    "Floor": {
+      "required": {
+        "id": "string", "userId": "string", "sessionId": "string", "focusMin": "number", "at": "string",
+        "timeScore": "number", "achievementScore": "number", "ownScore": "number",
+        "achievement": "number|null", "aiAchievement": "number|null", "floors": "number", "color": "string", "derivedFrom": "[string]"
+      },
+      "optional": { "asks": "number", "thoughtAsks": "number", "pt": "number" }
+    },
+    "Source": {
+      "required": { "url": "string" },
+      "optional": { "title": "string" }
+    },
+    "TutorMessage": {
+      "required": { "id": "string", "sessionId": "string", "role": "string", "kind": "string", "text": "string", "helpLevel": "string", "at": "string" },
+      "optional": { "sources": "[Source]" }
+    },
+    "HelpTotal": {
+      "required": { "small": "number", "medium": "number" },
+      "optional": {}
+    },
+    "Friendship": {
+      "required": { "id": "string", "userId": "string", "friendId": "string", "status": "string", "notifyOnStart": "boolean" },
+      "optional": { "createdAt": "string" }
+    },
+    "FriendUser": {
+      "required": { "id": "string", "displayName": "string" },
+      "optional": {}
+    },
+    "FriendEntry": {
+      "required": { "friendship": "Friendship", "user": "FriendUser", "activeNow": "boolean", "floors": "number", "streak": "number" },
+      "optional": { "today": "[TodayFloor]" }
+    },
+    "TodayFloor": {
+      "required": { "id": "string", "color": "string" },
+      "optional": {}
+    },
+    "HomeFriend": {
+      "required": { "userId": "string", "displayName": "string", "activeNow": "boolean", "today": "[TodayFloor]" },
+      "optional": {}
+    },
+    "FeedItem": {
+      "required": { "userId": "string", "displayName": "string", "oneLine": "string", "at": "string" },
+      "optional": {}
+    },
+    "HomeGoal": {
+      "required": { "goal": "Goal", "roadmap": "Roadmap|null" },
+      "optional": {}
+    },
+    "HomeTower": {
+      "required": { "totalFloors": "number", "streak": "number" },
+      "optional": {}
+    }
+  },
+  "responses": {
+    "GET /api/health": { "required": { "ok": "boolean", "auth": "string" }, "optional": { "loginRequired": "boolean", "store": "string", "demoSeed": "boolean" } },
+    "POST /api/login": { "required": { "token": "string", "user": "User" }, "optional": {} },
+    "GET /api/home": {
+      "required": { "me": "User", "goals": "[HomeGoal]", "active": "Session|null", "tower": "HomeTower", "feed": "[FeedItem]", "toReflect": "[Session]" },
+      "optional": { "friends": "[HomeFriend]" }
+    },
+    "GET /api/me": { "model": "User" },
+    "PUT /api/me": { "model": "User" },
+    "POST /api/goals": { "model": "Goal" },
+    "GET /api/goals": { "required": { "goals": "[Goal]" }, "optional": {} },
+    "GET /api/goals/:id": {
+      "required": { "goal": "Goal", "roadmap": "Roadmap|null", "candidates": "[Candidate]", "axes": "[Axis]" },
+      "optional": { "pace": "string|null" }
+    },
+    "POST /api/goals/:id/candidates": { "required": { "axes": "[Axis]", "candidates": "[Candidate]" }, "optional": {} },
+    "POST /api/goals/:id/roadmap": { "model": "Roadmap" },
+    "POST /api/sessions": { "model": "Session" },
+    "GET /api/sessions/active": { "required": { "session": "Session|null" }, "optional": {} },
+    "POST /api/sessions/:id/events": { "model": "Event" },
+    "POST /api/sessions/:id/end": { "required": { "session": "Session", "floor": "Floor" }, "optional": {} },
+    "GET /api/sessions/:id/tutor": { "required": { "messages": "[TutorMessage]", "helpTotal": "HelpTotal" }, "optional": {} },
+    "POST /api/sessions/:id/tutor": { "required": { "messages": "[TutorMessage]", "helpTotal": "HelpTotal" }, "optional": {} },
+    "GET /api/tower": { "required": { "floors": "[Floor]", "totalFloors": "number", "streak": "number" }, "optional": {} },
+    "POST /api/friends": { "model": "Friendship" },
+    "POST /api/friends/:id/accept": { "model": "Friendship" },
+    "GET /api/friends": { "required": { "friends": "[FriendEntry]" }, "optional": {} },
+    "GET /api/feed": { "required": { "items": "[FeedItem]" }, "optional": {} },
+    "POST /api/materials/read": { "required": { "text": "string" }, "optional": {} },
+    "POST /api/sessions/:id/reflect": {
+      "required": { "judgeable": "boolean", "aiAchievement": "number|null", "achievement": "number|null", "reason": "string", "nextSteps": "[string]", "floor": "Floor" },
+      "optional": {}
+    },
+    "POST /api/sessions/:id/reflect/confirm": {
+      "required": { "achievement": "number", "aiAchievement": "number|null", "floor": "Floor" },
+      "optional": {}
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "expo": {
+    "name": "MolTower",
+    "slug": "devfest26-app-mobile",
+    "version": "0.1.0",
+    "scheme": "kangaetsuzukeru",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "platforms": ["ios", "android", "web"],
+    "plugins": [
+      "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "ノートの写真を振り返りに使います。",
+          "cameraPermission": "ノートを撮って振り返りに使います。"
+        }
+      ],
+      "./plugins/withFocusLock",
+      "expo-notifications"
+    ],
+    "android": {
+      "package": "app.kangaetsuzukeru.devfest26",
+      "versionCode": 1,
+      "adaptiveIcon": { "backgroundColor": "#FBF6EF" }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
+    "experiments": {
+      "typedRoutes": false
+    }
+  }
+}

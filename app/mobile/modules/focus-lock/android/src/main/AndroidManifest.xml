@@ -1,0 +1,3 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <!-- 権限とサービスの宣言は config plugin（plugins/withFocusLock.js）がアプリの AndroidManifest.xml に入れる -->
+</manifest>

@@ -1,0 +1,16 @@
+// 集中中は他のアプリを開けなくする（#300）。Expo のローカルモジュール（Android だけ）
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'expo.modules.focuslock'
+version = '0.1.0'
+
+android {
+  namespace "expo.modules.focuslock"
+  defaultConfig {
+    versionCode 1
+    versionName "0.1.0"
+  }
+}

@@ -1,0 +1,8 @@
+node_modules
+.expo/
+dist/
+expo-env.d.ts
+*.tsbuildinfo
+# FCM の設定（#299・リポに入れない）
+google-services.json
+.env
